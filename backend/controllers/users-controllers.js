@@ -28,11 +28,15 @@ const signup = async (req, res, next) => {
   }
 
   const { name, email, password } = req.body;
+  console.log("name: " + name);
+  console.log("email: " + email);
+  console.log("password: " + password);
 
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       'Signing up failed, please try again later.',
       500
@@ -81,7 +85,7 @@ const signup = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
-      'supersecret_dont_share',
+      process.env.JWT_KEY,
       { expiresIn: '1h' }
     );
   } catch (err) {
@@ -143,7 +147,7 @@ const login = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
-      'supersecret_dont_share',
+      process.env.JWT_KEY,
       { expiresIn: '1h' }
     );
   } catch (err) {
